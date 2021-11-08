@@ -8,21 +8,29 @@ generator client {
     previewFeatures = ["mongoDb"]
 }
 
-model Service {
-    id        String    @id @default(dbgenerated()) @map("_id") @db.ObjectId
-    name      String
-    domain    String
-    port      Int
-    createdAt DateTime  @default(now())
-    updatedAt DateTime  @updatedAt
-    Handler   Handler[]
+model Thread {
+    id        String   @id @default(dbgenerated()) @map("_id") @db.ObjectId
+    posterId  String
+    title     String?
+    name      String?
+    content   String?
+    image     String?
+    withImg   Boolean  @default(false)
+    createdAt DateTime @default(now())
+
+    Reply Reply[]
 }
 
-model Handler {
-    id        String  @id @default(dbgenerated()) @map("_id") @db.ObjectId
-    serviceId String  @db.ObjectId
-    Service   Service @relation(fields: [serviceId], references: [id])
-    type      String?
-    routes    String?
-    target    String?
+model Reply {
+    id        String   @id @default(dbgenerated()) @map("_id") @db.ObjectId
+    posterId  String //發文者ID
+    name      String?
+    content   String?
+    image     String?
+    sage      Boolean  @default(false)
+    withImg   Boolean  @default(false)
+    createdAt DateTime @default(now())
+
+    threadId String @db.ObjectId
+    Thread   Thread @relation(fields: [threadId], references: [id])
 }
