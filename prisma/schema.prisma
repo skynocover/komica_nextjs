@@ -9,28 +9,56 @@ generator client {
 }
 
 model Thread {
-    id        String   @id @default(dbgenerated()) @map("_id") @db.ObjectId
-    posterId  String
-    title     String?
-    name      String?
-    content   String?
-    image     String?
-    withImg   Boolean  @default(false)
-    createdAt DateTime @default(now())
+    id         String   @id @default(dbgenerated()) @map("_id") @db.ObjectId
+    posterId   String
+    title      String?
+    name       String
+    content    String?
+    image      String?
+    youtubeID String?
+    createdAt  DateTime @default(now())
+    replyAt    DateTime @default(now())
 
     Reply Reply[]
 }
 
 model Reply {
-    id        String   @id @default(dbgenerated()) @map("_id") @db.ObjectId
-    posterId  String //發文者ID
-    name      String?
-    content   String?
-    image     String?
-    sage      Boolean  @default(false)
-    withImg   Boolean  @default(false)
-    createdAt DateTime @default(now())
+    id         String   @id @default(dbgenerated()) @map("_id") @db.ObjectId
+    posterId   String //發文者ID
+    name       String?
+    content    String?
+    image      String
+    youtubeID String?
+    sage       Boolean  @default(false)
+    createdAt  DateTime @default(now())
 
     threadId String @db.ObjectId
     Thread   Thread @relation(fields: [threadId], references: [id])
+}
+
+model Report {
+    id        String       @id @default(dbgenerated()) @map("_id") @db.ObjectId
+    postId    String?
+    reason    ReportReason
+    content   String
+    createdAt DateTime     @default(now())
+}
+
+enum ReportReason {
+    bug
+    del
+    war
+}
+
+model Log {
+    id        String   @id @default(dbgenerated()) @map("_id") @db.ObjectId
+    ip        String
+    createdAt DateTime @default(now())
+    action    Action
+}
+
+enum Action {
+    thread
+    reply
+    report
 }

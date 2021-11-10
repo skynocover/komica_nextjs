@@ -32,4 +32,4 @@ yarn-error.log*
 
 pages/home2.tsx
 
-.env2
+.env

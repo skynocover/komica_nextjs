@@ -1,32 +1,55 @@
 import React from 'react';
 import axios from 'axios';
-import * as antd from 'antd';
 
+import Drawer from '@material-ui/core/Drawer';
+import { makeStyles } from '@material-ui/core/styles';
+import Snackbar from '@material-ui/core/Snackbar';
+import MuiAlert from '@material-ui/lab/Alert';
+
+import { PostForm } from './PostForm';
 import { Notification } from '../components/Notification';
 
-export interface service {
-  id: string;
-  domain: string;
-  name: string;
-  port: string;
+export interface thread {
+  id?: string;
+  posterId?: string;
+  title: string;
+  image?: string;
+  youtubeID?: string;
+  content: string;
+  name?: string;
+  Reply?: reply[];
+  createdAt?: string;
+}
+
+export interface reply {
+  id?: string;
+  parentId: string;
+  posterId?: string;
+  image?: string;
+  youtubeID?: string;
+  content: string;
+  name?: string;
+  sage: boolean;
+  createdAt?: string;
+}
+
+export interface report {
+  postId?: string;
+  reason: string;
+  content: string;
 }
 
 interface AppContextProps {
-  setModal: (modal: any) => void;
-
-  account: string;
-  setAccount: (value: string) => void;
-  isAdmin: boolean;
-  setIsAdmin: (value: boolean) => void;
-
   fetch: (
     method: 'get' | 'post' | 'put' | 'delete' | 'patch',
     url: string,
     param?: any,
   ) => Promise<any>;
 
-  dataSource: service[];
-  setDataSource: React.Dispatch<React.SetStateAction<service[]>>;
+  Request: (post: thread | reply | report, route: string, successLabel: string) => Promise<void>;
+
+  toggle: (open: any, form: any) => (event: any) => void;
+  setDrawOpen: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
 const AppContext = React.createContext<AppContextProps>(undefined!);
@@ -36,12 +59,46 @@ interface AppProviderProps {
 }
 
 const AppProvider = ({ children }: AppProviderProps) => {
-  const [modal, setModal] = React.useState<any>(null);
+  // toggle
+  const [drawOpen, setDrawOpen] = React.useState(false);
+  const [Form, setForm] = React.useState<any>(<PostForm />);
 
-  const [account, setAccount] = React.useState('admin');
-  const [isAdmin, setIsAdmin] = React.useState(false);
+  const toggle = (open: any, form: any) => (event: any) => {
+    if (event.type === 'keydown' && (event.key === 'Tab' || event.key === 'Shift')) {
+      return;
+    }
+    open && setForm(form);
+    setDrawOpen(open);
+  };
 
-  const [dataSource, setDataSource] = React.useState<service[]>([]); //coulmns data
+  // success drawer
+  const [success, setSuccess] = React.useState(false);
+  const [successLabel, setSuccessLabel] = React.useState('success');
+  const [severity, setSeverity] = React.useState<any>('success');
+  const SuccessClose = (_event: any, reason: any) => {
+    if (reason === 'clickaway') {
+      return;
+    }
+    setSuccess(false);
+  };
+
+  // api ...
+  const Request = async (post: thread | reply | report, route: string, successLabel: string) => {
+    try {
+      const { data } = await axios.post(`/api/${route}`, { ...post });
+      if (data.errorCode === 0) {
+        setSuccessLabel(successLabel);
+        setSeverity('success');
+        setSuccess(true);
+      } else {
+        setSeverity('error');
+        setSuccessLabel(data.errorMessage);
+        setSuccess(true);
+      }
+    } catch (error) {
+      console.error(error);
+    }
+  };
 
   /////////////////////////////////////////////////////
 
@@ -77,35 +134,45 @@ const AppProvider = ({ children }: AppProviderProps) => {
 
   /////////////////////////////////////////////////////
 
+  const useStyles = makeStyles((theme) => ({
+    root: {
+      width: '100%',
+      '& > * + *': {
+        marginTop: theme.spacing(2),
+      },
+    },
+  }));
+  const classes = useStyles();
+
   return (
     <AppContext.Provider
       value={{
-        setModal: (modal: any) => setModal(modal),
-
-        account,
-        setAccount,
-        isAdmin,
-        setIsAdmin,
-
         fetch,
 
-        dataSource,
-        setDataSource,
+        setDrawOpen,
+
+        Request,
+        toggle,
       }}
     >
-      {modal && (
-        <antd.Modal
-          visible={modal !== null}
-          onOk={() => setModal(null)}
-          onCancel={() => setModal(null)}
-          footer={null}
-          closable={false}
-        >
-          {modal}
-        </antd.Modal>
-      )}
-
       {children}
+
+      <div className={classes.root}>
+        <Snackbar open={success} autoHideDuration={1500} onClose={SuccessClose}>
+          <MuiAlert
+            elevation={6}
+            variant="filled"
+            onClose={() => setSuccess(false)}
+            severity={severity}
+          >
+            {successLabel}
+          </MuiAlert>
+        </Snackbar>
+      </div>
+
+      <Drawer anchor="bottom" open={drawOpen} onClose={toggle(false, null)}>
+        <div className="m-3">{Form}</div>
+      </Drawer>
     </AppContext.Provider>
   );
 };

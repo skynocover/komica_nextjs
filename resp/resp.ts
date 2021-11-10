@@ -1,3 +1,5 @@
+import { postLimit } from '../utils/setLog';
+
 export interface Tresp {
   errorCode: number;
   errorMessage: string;
@@ -7,11 +9,6 @@ export const Resp = {
   success: {
     errorCode: 0,
     errorMessage: '',
-  },
-
-  backendCheckSessionFail: {
-    errorCode: 9999,
-    errorMessage: 'Session無效或過期',
   },
 
   // Api Fail
@@ -28,6 +25,11 @@ export const Resp = {
   queryNotFound: {
     errorCode: 1002,
     errorMessage: 'param Input not found',
+  },
+
+  postLimit: {
+    errorCode: 1003,
+    errorMessage: postLimit,
   },
 
   // DB Fail
