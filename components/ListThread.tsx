@@ -12,6 +12,8 @@ import ReportIcon from '@material-ui/icons/Report';
 import ReplyRoundedIcon from '@material-ui/icons/ReplyRounded';
 import Link from '@material-ui/core/Link';
 import ReactMarkdown from 'react-markdown';
+import clsx from 'clsx';
+
 import { ReportForm } from './ReportForm';
 import { PostForm } from './PostForm';
 import { Image } from './Image';
@@ -67,13 +69,18 @@ export const ListThreads = ({ threads }: { threads: any }) => {
     );
   };
 
-  const Post = ({ post }: { post: reply | thread }) => {
+  const Post = ({ post, outside }: { post: reply | thread; outside: boolean }) => {
+    const contentClassName = clsx(
+      `md:col-start-${outside ? '2' : '1'}`,
+      `md:col-span-${outside ? '2' : '3'}`,
+    );
+    const markdownClassName = clsx(`md:col-span-${outside ? '2' : '3'} mx-2`);
     return (
       <div>
         <ThreadLabel post={post} />
         <div className="grid grid-cols-1 md:grid-cols-6">
           {post.image || post.youtubeID ? (
-            <div className="md:col-start-2 md:col-span-2">
+            <div className={contentClassName}>
               {post.image ? (
                 <Image image={post.image} />
               ) : (
@@ -91,7 +98,7 @@ export const ListThreads = ({ threads }: { threads: any }) => {
             <div className="col-span-0 md:col-end-3"></div>
           )}
 
-          <div className="md:col-span-2 mx-2">
+          <div className={markdownClassName}>
             <ReactMarkdown children={post.content} />
           </div>
         </div>
@@ -106,7 +113,7 @@ export const ListThreads = ({ threads }: { threads: any }) => {
 
     return (
       <>
-        <Post post={thread} />
+        <Post post={thread} outside={true} />
         {thread.Reply?.length! > showReply && (
           <div className="grid grid-cols-1 md:grid-cols-6 ">
             <Accordion className="md:col-start-2 md:col-span-4">
@@ -123,7 +130,7 @@ export const ListThreads = ({ threads }: { threads: any }) => {
                   {thread.Reply?.filter(
                     (item: any, index: any) => index < thread.Reply?.length! - showReply,
                   ).map((item: any) => (
-                    <Post key={item.id} post={item} />
+                    <Post key={item.id} post={item} outside={false} />
                   ))}
                 </div>
               </AccordionDetails>
@@ -134,7 +141,7 @@ export const ListThreads = ({ threads }: { threads: any }) => {
         {thread.Reply?.filter(
           (item: any, index: any) => index >= thread.Reply?.length! - showReply,
         ).map((item: any) => (
-          <Post key={item.id} post={item} />
+          <Post key={item.id} post={item} outside={true} />
         ))}
         <Divider className="flex" />
       </>

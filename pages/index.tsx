@@ -1,7 +1,7 @@
 import React from 'react';
-import { GetServerSideProps, InferGetServerSidePropsType } from 'next';
+import { GetServerSideProps, GetStaticProps, InferGetServerSidePropsType } from 'next';
 import { useRouter } from 'next/router';
-import { Divider } from '@material-ui/core';
+import { Divider, LinkTypeMap } from '@material-ui/core';
 import Button from '@material-ui/core/Button';
 import ButtonGroup from '@material-ui/core/ButtonGroup';
 import Typography from '@material-ui/core/Typography';
@@ -20,30 +20,16 @@ import { Thread, Reply } from '.prisma/client';
 
 const pageSize = 8;
 
-const getEnv = (prefix: string): string[] => {
-  let value: string[] = [];
-  // let i = 0;
-  // while (process.env[`${prefix}${i}`]) {
-  //   value.push(process.env[`${prefix}${i}`]!);
-  //   console.log(i);
-  //   console.log(process.env[`${prefix}${i}`]);
-  //   i++;
-  // }
-  for (let i = 0; i < 10; i++) {
-    if (process.env[`${prefix}${i}`]) {
-      value.push(process.env[`${prefix}${i}`]!);
-      console.log(i);
-      console.log(process.env[`${prefix}${i}`]);
-    } else {
-      break;
-    }
-  }
-  return value;
-};
+interface link {
+  name: string;
+  url: string;
+}
 
 export default function Index({
   threads,
   count,
+  topLink,
+  headLink,
 }: InferGetServerSidePropsType<typeof getServerSideProps>) {
   const appCtx = React.useContext(AppContext);
   const router = useRouter();
@@ -68,14 +54,12 @@ export default function Index({
       <div className="flex justify-end">
         <div className={classes.root}>
           <ButtonGroup variant="text" color="primary" aria-label="text primary button group">
-            {getEnv('NEXT_PUBLIC_TOP_LINK_').map((item, index) => (
-              <Button href={item.split('@')[1]} target="_blank" key={index}>
-                {item.split('@')[0]}
-              </Button>
-            ))}
-            {/* {getEnv('NEXT_PUBLIC_TOP_LINK_').map((item, index) => {
-              console.log(item);
-            })} */}
+            {topLink &&
+              topLink.map((item: link, index: number) => (
+                <Button href={item.url} target="_blank" key={index}>
+                  {item.name}
+                </Button>
+              ))}
           </ButtonGroup>
         </div>
       </div>
@@ -90,18 +74,14 @@ export default function Index({
         </div>
         <div className="flex justify-center">
           <ButtonGroup variant="outlined" aria-label="outlined button group">
-            <Button color="primary" href="http://www.dota2.com/play/" target="_blank">
-              Dota2
-            </Button>
-            <Button color="primary" href="https://dota2.gamepedia.com/Dota_2_Wiki" target="_blank">
-              Dota2 Wiki
-            </Button>
-            <Button color="primary" href="https://underlords.com" target="_blank">
-              Underlords
-            </Button>
+            {headLink &&
+              headLink.map((item: link, index: number) => (
+                <Button color="primary" href={item.url} target="_blank" key={index}>
+                  {item.name}
+                </Button>
+              ))}
           </ButtonGroup>
         </div>
-
         <Divider />
       </div>
     );
@@ -151,6 +131,20 @@ export default function Index({
   );
 }
 
+const getEnv = (prefix: string): link[] => {
+  let value: link[] = [];
+  let i = 0;
+  while (process.env[`${prefix}${i}`]) {
+    value.push({
+      name: process.env[`${prefix}${i}`]!.split('@')[0],
+      url: process.env[`${prefix}${i}`]!.split('@')[1],
+    });
+    i++;
+  }
+
+  return value;
+};
+
 export const getServerSideProps: GetServerSideProps = async ({ req, res, query }) => {
   try {
     const id = query.id;
@@ -188,7 +182,10 @@ export const getServerSideProps: GetServerSideProps = async ({ req, res, query }
       };
     });
 
-    return { props: { threads, count } };
+    const topLink = getEnv('NEXT_PUBLIC_TOP_LINK_');
+    const headLink = getEnv('NEXT_PUBLIC_HEAD_LINK_');
+
+    return { props: { threads, count, topLink, headLink } };
   } catch (error: any) {
     console.log(error.message);
     return { props: { error: error.message } };
