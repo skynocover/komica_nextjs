@@ -80,9 +80,7 @@ export const ListThreads = ({ threads }: { threads: any }) => {
         <ThreadLabel post={post} />
         <div className="grid grid-cols-1 md:grid-cols-6">
           {post.image || post.youtubeID ? (
-            <div
-              className={`md:col-start-${outside ? '2' : '1'} md:col-span-${outside ? '2' : '3'}`}
-            >
+            <div className={`md:col-start-2 md:col-span-2`}>
               {post.image ? (
                 <Image image={post.image} />
               ) : (
@@ -100,8 +98,7 @@ export const ListThreads = ({ threads }: { threads: any }) => {
             <div className="col-span-0 md:col-end-3"></div>
           )}
 
-          <div className={`md:col-span-${outside ? '2' : '3'} ml-2`}>
-            {/* <div className={'md:col-span-2 ml-2'}> */}
+          <div className={'md:col-span-2 ml-2'}>
             {/* <div className={markdownClassName}> */}
             <ReactMarkdown children={post.content} />
           </div>
