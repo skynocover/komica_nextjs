@@ -56,6 +56,7 @@ export const PostForm = ({ parentId }: { parentId?: string }) => {
       if (!parentId && !values.title) errors.title = '標題必填';
       if (!values.content) errors.content = '內文必填';
       if (values.image && values.youtubeURL) errors.youtubeURL = 'youtube連結及圖片只能擇一';
+      if (values.image && values.image.size > 2048 * 1000) errors.image = '圖檔限制為2MB';
 
       if (values.youtubeURL && !youtubeURL_Regex.test(values.youtubeURL))
         errors.youtubeURL = 'youtube連結格式錯誤';
@@ -66,7 +67,6 @@ export const PostForm = ({ parentId }: { parentId?: string }) => {
       const baseimage = values.image ? await toBase64(values.image) : '';
       const matchurl = values.youtubeURL?.match(youtubeURL_Regex);
       const youtubeID = matchurl ? matchurl[1] : '';
-
       if (parentId) {
         await appCtx.Request(
           {
@@ -93,10 +93,8 @@ export const PostForm = ({ parentId }: { parentId?: string }) => {
           '發文成功',
         );
       }
-
       appCtx.setDrawOpen(false);
       action.resetForm();
-
       router.push(parentId ? `/?id=${parentId}` : '/?page=1');
     },
   });
@@ -165,6 +163,7 @@ export const PostForm = ({ parentId }: { parentId?: string }) => {
             </Button>
           </label>
           <div className={'flex items-center'}>{formik.values.image?.name}</div>
+          {<span className="text-red-600"> {formik.errors.image}</span>}
 
           <div className="flex-1" />
           <Fab

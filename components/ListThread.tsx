@@ -12,7 +12,6 @@ import ReportIcon from '@material-ui/icons/Report';
 import ReplyRoundedIcon from '@material-ui/icons/ReplyRounded';
 import Link from '@material-ui/core/Link';
 import ReactMarkdown from 'react-markdown';
-import clsx from 'clsx';
 
 import { ReportForm } from './ReportForm';
 import { PostForm } from './PostForm';
@@ -70,11 +69,6 @@ export const ListThreads = ({ threads }: { threads: any }) => {
   };
 
   const Post = ({ post, position }: { post: reply | thread; position: 'inside' | 'outside' }) => {
-    // const contentClassName = clsx(
-    //   `md:col-start-${outside ? '2' : '1'}`,
-    //   `md:col-span-${outside ? '2' : '3'}`,
-    // );
-    // const markdownClassName = clsx(`md:col-span-${outside ? '2' : '3'} ml-2`);
     const contentClassName = {
       inside: 'md:col-start-1 md:col-span-3',
       outside: 'md:col-start-2 md:col-span-2',
@@ -90,7 +84,6 @@ export const ListThreads = ({ threads }: { threads: any }) => {
         <div className="grid grid-cols-1 md:grid-cols-6">
           {post.image || post.youtubeID ? (
             <div className={contentClassName[position]}>
-              {/* <div className={`md:col-start-2 md:col-span-2`}> */}
               {post.image ? (
                 <Image image={post.image} />
               ) : (
@@ -108,7 +101,6 @@ export const ListThreads = ({ threads }: { threads: any }) => {
             <div className="col-span-0 md:col-end-3"></div>
           )}
 
-          {/* <div className={'md:col-span-2 ml-2'}> */}
           <div className={markdownClassName[position]}>
             <ReactMarkdown children={post.content} />
           </div>

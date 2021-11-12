@@ -2,6 +2,7 @@ import type { NextApiRequest, NextApiResponse } from 'next';
 import { prisma } from '../../database/db';
 import { Resp, Tresp } from '../../resp/resp';
 import { setLog } from '../../utils/setLog';
+import { getBinarySize } from '../../utils/getStringSize';
 
 export default async (req: NextApiRequest, res: NextApiResponse) => {
   async function postThread() {
@@ -17,6 +18,11 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
 
       if (image && youtubeID) {
         res.json(Resp.paramInputFormateError);
+        return;
+      }
+
+      if (image && getBinarySize(image) > 4096 * 1000) {
+        res.json(Resp.imgLimit);
         return;
       }
 
@@ -44,4 +50,12 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
     default:
       return res.status(405).end(`Method ${req.method} Not Allowed`);
   }
+};
+
+export const config = {
+  api: {
+    bodyParser: {
+      sizeLimit: '4mb',
+    },
+  },
 };

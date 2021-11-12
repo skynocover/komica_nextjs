@@ -32,6 +32,11 @@ export const Resp = {
     errorMessage: postLimit,
   },
 
+  imgLimit: {
+    errorCode: 1004,
+    errorMessage: '圖檔上傳過大',
+  },
+
   // DB Fail
   sqlExecFail: {
     errorCode: 2000,
