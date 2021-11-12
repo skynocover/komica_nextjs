@@ -76,7 +76,7 @@ export const ListThreads = ({ threads }: { threads: any }) => {
     );
     const markdownClassName = clsx(`md:col-span-${outside ? '2' : '3'} ml-2`);
     return (
-      <div>
+      <>
         <ThreadLabel post={post} />
         <div className="grid grid-cols-1 md:grid-cols-6">
           {post.image || post.youtubeID ? (
@@ -102,7 +102,7 @@ export const ListThreads = ({ threads }: { threads: any }) => {
             <ReactMarkdown children={post.content} />
           </div>
         </div>
-      </div>
+      </>
     );
   };
 
