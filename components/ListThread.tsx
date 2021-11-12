@@ -69,18 +69,28 @@ export const ListThreads = ({ threads }: { threads: any }) => {
     );
   };
 
-  const Post = ({ post, outside }: { post: reply | thread; outside: boolean }) => {
+  const Post = ({ post, position }: { post: reply | thread; position: 'inside' | 'outside' }) => {
     // const contentClassName = clsx(
     //   `md:col-start-${outside ? '2' : '1'}`,
     //   `md:col-span-${outside ? '2' : '3'}`,
     // );
     // const markdownClassName = clsx(`md:col-span-${outside ? '2' : '3'} ml-2`);
+    const contentClassName = {
+      inside: 'md:col-start-1 md:col-span-3',
+      outside: 'md:col-start-2 md:col-span-2',
+    };
+
+    const markdownClassName = {
+      inside: 'md:col-span-3 ml-2',
+      outside: 'md:col-span-2 ml-2',
+    };
     return (
       <>
         <ThreadLabel post={post} />
         <div className="grid grid-cols-1 md:grid-cols-6">
           {post.image || post.youtubeID ? (
-            <div className={`md:col-start-2 md:col-span-2`}>
+            <div className={contentClassName[position]}>
+              {/* <div className={`md:col-start-2 md:col-span-2`}> */}
               {post.image ? (
                 <Image image={post.image} />
               ) : (
@@ -98,8 +108,8 @@ export const ListThreads = ({ threads }: { threads: any }) => {
             <div className="col-span-0 md:col-end-3"></div>
           )}
 
-          <div className={'md:col-span-2 ml-2'}>
-            {/* <div className={markdownClassName}> */}
+          {/* <div className={'md:col-span-2 ml-2'}> */}
+          <div className={markdownClassName[position]}>
             <ReactMarkdown children={post.content} />
           </div>
         </div>
@@ -114,7 +124,7 @@ export const ListThreads = ({ threads }: { threads: any }) => {
 
     return (
       <>
-        <Post post={thread} outside={true} />
+        <Post post={thread} position={'outside'} />
         {thread.Reply?.length! > showReply && (
           <div className="grid grid-cols-1 md:grid-cols-6 ">
             <Accordion className="md:col-start-2 md:col-span-4">
@@ -131,7 +141,7 @@ export const ListThreads = ({ threads }: { threads: any }) => {
                   {thread.Reply?.filter(
                     (item: any, index: any) => index < thread.Reply?.length! - showReply,
                   ).map((item: any) => (
-                    <Post key={item.id} post={item} outside={false} />
+                    <Post key={item.id} post={item} position={'outside'} />
                   ))}
                 </div>
               </AccordionDetails>
@@ -142,7 +152,7 @@ export const ListThreads = ({ threads }: { threads: any }) => {
         {thread.Reply?.filter(
           (item: any, index: any) => index >= thread.Reply?.length! - showReply,
         ).map((item: any) => (
-          <Post key={item.id} post={item} outside={true} />
+          <Post key={item.id} post={item} position={'outside'} />
         ))}
         <Divider className="flex" />
       </>
