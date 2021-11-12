@@ -6,7 +6,8 @@ import '../styles/globals.css';
 import 'tailwindcss/tailwind.css';
 import 'font-awesome/css/font-awesome.min.css';
 import 'antd/dist/antd.css';
-import '../mainstyle.css';
+// import '../mainstyle.css';
+import '../styles/globals.css';
 
 const MyApp = ({ Component, pageProps }: AppProps) => {
   React.useEffect(() => {}, []);
