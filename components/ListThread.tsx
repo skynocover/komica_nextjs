@@ -70,19 +70,17 @@ export const ListThreads = ({ threads }: { threads: any }) => {
   };
 
   const Post = ({ post, outside }: { post: reply | thread; outside: boolean }) => {
-    // const contentClassName = clsx(
-    //   `md:col-start-${outside ? '2' : '1'}`,
-    //   `md:col-span-${outside ? '2' : '3'}`,
-    // );
-    // const markdownClassName = clsx(`md:col-span-${outside ? '2' : '3'} mx-2`);
+    const contentClassName = clsx(
+      `md:col-start-${outside ? '2' : '1'}`,
+      `md:col-span-${outside ? '2' : '3'}`,
+    );
+    const markdownClassName = clsx(`md:col-span-${outside ? '2' : '3'} ml-2`);
     return (
       <div>
         <ThreadLabel post={post} />
         <div className="grid grid-cols-1 md:grid-cols-6">
           {post.image || post.youtubeID ? (
-            <div
-              className={`md:col-start-${outside ? '2' : '1'} md:col-span-${outside ? '2' : '3'}`}
-            >
+            <div className={contentClassName}>
               {post.image ? (
                 <Image image={post.image} />
               ) : (
@@ -100,7 +98,7 @@ export const ListThreads = ({ threads }: { threads: any }) => {
             <div className="col-span-0 md:col-end-3"></div>
           )}
 
-          <div className={`md:col-span-${outside ? '2' : '3'} mx-2`}>
+          <div className={markdownClassName}>
             <ReactMarkdown children={post.content} />
           </div>
         </div>
