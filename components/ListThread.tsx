@@ -141,7 +141,7 @@ export const ListThreads = ({ threads }: { threads: any }) => {
                   {thread.Reply?.filter(
                     (item: any, index: any) => index < thread.Reply?.length! - showReply,
                   ).map((item: any) => (
-                    <Post key={item.id} post={item} position={'outside'} />
+                    <Post key={item.id} post={item} position={'inside'} />
                   ))}
                 </div>
               </AccordionDetails>
