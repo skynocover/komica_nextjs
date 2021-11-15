@@ -52,10 +52,4 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
   }
 };
 
-export const config = {
-  api: {
-    bodyParser: {
-      sizeLimit: '4mb',
-    },
-  },
-};
+export const config = { api: { bodyParser: { sizeLimit: '4mb' } } };
